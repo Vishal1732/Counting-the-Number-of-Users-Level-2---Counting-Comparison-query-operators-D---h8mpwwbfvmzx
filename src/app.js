@@ -1,23 +1,51 @@
+// const express = require('express');
+// const app = express();
+// const mongoose = require('mongoose');
+// const users   =require("../models/user.js");
+
+// //Router Middlewares
+// app.use(express.json());
+
+// //Type of query (Hint)
+
+// /*
+
+// 1. / --> this means we need to consider all users
+// 2. /?name=swa --> Will return count of all the user name that have prefix swa. We will (Swaraj Jain, Swarak agrawal, etc). 
+// 3. /?name= -->this means we need to consider all users
+
+// */
+
+
+// // Complete this Route which will return the count of Number of Prefixmatch for the name in the query/
+
+// app.get("/",async function(req,res){
+
+//     var count = 0;
+
+//     //Write you code here
+//     //update count variable
+
+//     res.send(JSON.stringify(count));
+
+// });
+
+// module.exports = app;
+
+
 const express = require('express');
-const mongoose = require('mongoose');
-const User = require('./models/user');
-
 const app = express();
-const port = process.env.PORT || 3000;
+const mongoose = require('mongoose');
+const users = require("../models/user.js");
 
-mongoose.connect('mongodb://localhost:27017/myapp', { useNewUrlParser: true });
+// Router Middlewares
+app.use(express.json());
 
-app.get('/', async (req, res) => {
-  try {
-    const namePrefix = req.query.name ? req.query.name.toLowerCase() : '';
-    const count = await User.countDocuments({ name: { $regex: `^${namePrefix}`, $options: 'i' } });
-    res.status(200).json({ count });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server Error' });
-  }
+// Route to get the count of users whose name starts with the given prefix
+app.get("/", async function(req, res) {
+  let namePrefix = req.query.name || "";
+  let count = await users.countDocuments({ name: { $regex: "^" + namePrefix, $options: "i" } });
+  res.send(JSON.stringify(count));
 });
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+module.exports = app;
